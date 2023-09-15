@@ -306,7 +306,7 @@ const FruchtermanReingoldContentPage: React.FC<SideBarProps> = () => {
         </a>
       </h2>
       <div>
-        <div className="not-prose h-[600px]">
+        <div className="not-prose h-[400px] lg:h-[600px]">
           <FruchReinDisplay ref={fruchReinDisplayRef} />
         </div>
       </div>
