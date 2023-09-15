@@ -74,7 +74,9 @@ export default class StarsCollide extends Component<StarsCollideProps> {
   };
 
   private draw = (p5: p5) => {
-    p5.background(0, 0, 0);
+    p5.colorMode(p5.RGB);
+    p5.background(15, 23, 42);
+    p5.colorMode(p5.HSB, p5.width, 100, 100, 100);
     if (p5.deltaTime > 2000) {
       this.setup(p5);
       return;

@@ -1,6 +1,7 @@
 "use client";
 import React from "react";
 import p5 from "p5";
+import { DrawingContext } from "@/lib/tasks/DrawingContext";
 
 export interface P5SketchProps {
   /**	ClassName for canvas parent ref  */
@@ -76,15 +77,16 @@ export const p5Events: Array<keyof P5SketchProps> = [
 export default class P5Sketch extends React.Component<P5SketchProps> {
   protected canvasParentRef: React.RefObject<HTMLDivElement>;
   private canvas: p5 | null = null;
+  public dc: DrawingContext;
+  public loaded: Promise<void>;
   constructor(props: P5SketchProps) {
     super(props);
     this.canvasParentRef = React.createRef();
   }
 
-  componentDidMount(): void {
+  async componentDidMount(): Promise<void> {
     const loadP5 = async () => {
       let p5 = await import("p5");
-
       this.canvas = new p5.default((p: p5) => {
         p.setup = () => {
           if (this.props.responsive) {
@@ -119,9 +121,11 @@ export default class P5Sketch extends React.Component<P5SketchProps> {
           };
         }
       }, this.canvasParentRef.current!);
-    };
 
-    loadP5();
+      this.dc = new DrawingContext(this.canvas);
+    };
+    this.loaded = loadP5();
+    await this.loaded;
   }
   shouldComponentUpdate() {
     return false;

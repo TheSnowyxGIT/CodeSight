@@ -1,16 +1,8 @@
 "use client";
 
 import * as React from "react";
-import {
-  Calculator,
-  Calendar,
-  Columns,
-  CreditCard,
-  Settings,
-  Smile,
-  User,
-} from "lucide-react";
-
+import { Newspaper, HomeIcon } from "lucide-react";
+import Image from "next/image";
 import {
   CommandDialog,
   CommandEmpty,
@@ -22,8 +14,11 @@ import {
   CommandShortcut,
 } from "@/components/ui/command";
 import { Button } from "./ui/button";
+import { categories, DocPages } from "./pages/pages";
+import { useRouter } from "next/navigation";
 
 export function NavBar() {
+  const router = useRouter();
   const [open, setOpen] = React.useState(false);
 
   React.useEffect(() => {
@@ -38,15 +33,25 @@ export function NavBar() {
   }, []);
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b bg-background/95">
+    <header className="sticky top-0 z-40 w-full border-b bg-background">
       <div className="container h-14 flex items-center">
         <div className="hidden md:flex mr-4">
-          <div className="flex items-center space-x-6 text-sm font-medium"></div>
+          <a
+            className="flex items-center space-x-6 text-sm font-medium"
+            href="/"
+          >
+            <Image
+              src="/code-sight-logo.png"
+              width={40}
+              height={40}
+              alt="Logo"
+            />
+            <span className="">CodeSight</span>
+          </a>
         </div>
-        <Button variant={"link"} className="px-0 py-2 mr-3 h-auto md:hidden">
-          <Columns />
-          <span className="sr-only">Toggle Menu</span>
-        </Button>
+        <a href="/" className="px-0 py-2 mr-3 h-auto md:hidden">
+          <Image src="/code-sight-logo.png" width={40} height={40} alt="Logo" />
+        </a>
         <div className="flex flex-1 items-center justify-between space-x-2 md:justify-end">
           <div className="w-full flex-1 md:w-auto md:flex-none">
             <Button
@@ -65,37 +70,38 @@ export function NavBar() {
               <CommandList>
                 <CommandEmpty>No results found.</CommandEmpty>
                 <CommandGroup heading="Suggestions">
-                  <CommandItem>
-                    <Calendar className="mr-2 h-4 w-4" />
-                    <span>Calendar</span>
-                  </CommandItem>
-                  <CommandItem>
-                    <Smile className="mr-2 h-4 w-4" />
-                    <span>Search Emoji</span>
-                  </CommandItem>
-                  <CommandItem>
-                    <Calculator className="mr-2 h-4 w-4" />
-                    <span>Calculator</span>
+                  <CommandItem
+                    onSelect={() => {
+                      router.push("/");
+                      setOpen(false);
+                    }}
+                  >
+                    <HomeIcon className="mr-2 h-4 w-4" />
+                    <span>Home</span>
                   </CommandItem>
                 </CommandGroup>
-                <CommandSeparator />
-                <CommandGroup heading="Settings">
-                  <CommandItem>
-                    <User className="mr-2 h-4 w-4" />
-                    <span>Profile</span>
-                    <CommandShortcut>⌘P</CommandShortcut>
-                  </CommandItem>
-                  <CommandItem>
-                    <CreditCard className="mr-2 h-4 w-4" />
-                    <span>Billing</span>
-                    <CommandShortcut>⌘B</CommandShortcut>
-                  </CommandItem>
-                  <CommandItem>
-                    <Settings className="mr-2 h-4 w-4" />
-                    <span>Settings</span>
-                    <CommandShortcut>⌘S</CommandShortcut>
-                  </CommandItem>
-                </CommandGroup>
+                {Object.keys(categories).map((cat) => {
+                  const title = categories[cat];
+                  return (
+                    <CommandGroup key={cat} heading={title}>
+                      {Object.keys(DocPages[cat]).map((pageName) => {
+                        const page = DocPages[cat][pageName];
+                        return (
+                          <CommandItem
+                            key={pageName}
+                            onSelect={() => {
+                              router.push(page.link);
+                              setOpen(false);
+                            }}
+                          >
+                            <Newspaper className="mr-2 h-4 w-4" />
+                            <span>{page.title}</span>
+                          </CommandItem>
+                        );
+                      })}
+                    </CommandGroup>
+                  );
+                })}
               </CommandList>
             </CommandDialog>
           </div>
