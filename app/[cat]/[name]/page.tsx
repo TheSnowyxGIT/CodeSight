@@ -50,22 +50,16 @@ export default function DocPage({ params: { cat, name } }: Params) {
   );
 }
 
-export async function getStaticPaths() {
+export async function generateStaticParams() {
   const paths = [];
-
   for (const cat in DocPages) {
     for (const name in DocPages[cat]) {
       paths.push({
-        params: {
-          cat: cat,
-          name: name,
-        },
+        cat: cat,
+        name: name,
       });
     }
   }
 
-  return {
-    paths,
-    fallback: false,
-  };
+  return paths;
 }
