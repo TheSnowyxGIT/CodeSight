@@ -1,5 +1,5 @@
 import SideBar from "@/components/sidebar";
-import { DocPages } from "@/components/pages/pages";
+import { DocPages, categories } from "@/components/pages/pages";
 import { Metadata } from "next";
 import { Params } from "next/dist/shared/lib/router/utils/route-matcher";
 import { notFound } from "next/navigation";
@@ -16,6 +16,7 @@ export default function DocPage({ params: { cat, name } }: Params) {
   cat = (cat as string).toLowerCase();
   name = (name as string).toLowerCase();
   const page = DocPages[cat]?.[name];
+  const catTitle = categories[cat];
   if (!page) {
     notFound();
   }
@@ -29,7 +30,7 @@ export default function DocPage({ params: { cat, name } }: Params) {
             <header className="relative z-20">
               <div>
                 <p className="mb-2 text-sm leading-6 font-semibold text-sky-500 dark:text-sky-400">
-                  {page.cat}
+                  {catTitle}
                 </p>
                 <div className="flex items-center">
                   <h1 className="inline-block text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight dark:text-slate-200">

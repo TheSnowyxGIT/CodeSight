@@ -1,11 +1,10 @@
-import p5 from "p5";
 import EventDispatcher from "../event-dispatcher/event-dispatcher";
 import { Graph, UndirectedGraph } from "../structs/Graph";
+import Vector from "../structs/Vector";
 import { Vertex } from "../structs/Vertex";
 import { RenderTask, RenderTaskOptions } from "../tasks/render.task";
 import { PrepareData, TaskOption } from "../tasks/Task";
 import { GraphRendererTask } from "./graph.renderer.task";
-
 export interface FruchReinRendererOptions {
   animated: boolean;
   C_rep: number;
@@ -35,40 +34,40 @@ export class FruchReinRenderTask extends RenderTask<FruchReinRendererOptions> {
   public resetPositions(): void {
     this.verticesPositions = [];
     for (let i = 0; i < this.graph.getVerticesNumber(); i++) {
-      const vector = new p5.Vector();
+      const vector = new Vector();
       vector.x = Math.random() * 40 - 20;
       vector.y = Math.random() * 40 - 20;
       this.verticesPositions.push(vector);
     }
   }
 
-  private verticesPositions: p5.Vector[];
+  private verticesPositions: Vector[];
 
   private maxIterations: number = 200;
   private thresholdForce: number = 0.01;
   private iterations: number = 0;
 
-  private calculateRepulsiveForce(u: Vertex, v: Vertex): p5.Vector {
+  private calculateRepulsiveForce(u: Vertex, v: Vertex): Vector {
     const uCoordinates = this.verticesPositions[u.Id];
     const vCoordinates = this.verticesPositions[v.Id];
-    const direction = p5.Vector.sub(uCoordinates, vCoordinates).normalize();
+    const direction = Vector.sub(uCoordinates, vCoordinates).normalize();
     const distance = uCoordinates.dist(vCoordinates);
     const force = direction.mult(this.options.C_rep / distance ** 2);
     return force;
   }
 
-  private calculateAttractiveForce(u: Vertex, v: Vertex): p5.Vector {
+  private calculateAttractiveForce(u: Vertex, v: Vertex): Vector {
     const uCoordinates = this.verticesPositions[u.Id];
     const vCoordinates = this.verticesPositions[v.Id];
-    const direction = p5.Vector.sub(vCoordinates, uCoordinates).normalize();
+    const direction = Vector.sub(vCoordinates, uCoordinates).normalize();
     const distance = uCoordinates.dist(vCoordinates);
     const length =
       Math.log10(distance / this.options.l) * this.options.C_spring;
     return direction.mult(length);
   }
 
-  private calculateForce(u: Vertex): p5.Vector {
-    let repulsiveForces: p5.Vector = new p5.Vector(0, 0);
+  private calculateForce(u: Vertex): Vector {
+    let repulsiveForces: Vector = new Vector(0, 0);
     for (const v of this.graph.getVertices()) {
       if (u.Id === v.Id) {
         continue;
@@ -76,7 +75,7 @@ export class FruchReinRenderTask extends RenderTask<FruchReinRendererOptions> {
       const repulsiveForce = this.calculateRepulsiveForce(u, v);
       repulsiveForces.add(repulsiveForce);
     }
-    let attractiveForces: p5.Vector = new p5.Vector(0, 0);
+    let attractiveForces: Vector = new Vector(0, 0);
     for (const v of this.graph.getAdjacentVertices(u)) {
       if (u.Id === v.Id) {
         continue;
@@ -87,8 +86,8 @@ export class FruchReinRenderTask extends RenderTask<FruchReinRendererOptions> {
     return repulsiveForces.add(attractiveForces);
   }
 
-  private calculateForces(): p5.Vector[] {
-    let forces: p5.Vector[] = [];
+  private calculateForces(): Vector[] {
+    let forces: Vector[] = [];
     for (const vertex of this.graph.getVertices()) {
       // calculate repulsive forces and attractive forces
       const force = this.calculateForce(vertex);
@@ -117,7 +116,7 @@ export class FruchReinRenderTask extends RenderTask<FruchReinRendererOptions> {
     return maxForceMagnitude;
   }
 
-  async processAllSteps(): Promise<p5.Vector[]> {
+  async processAllSteps(): Promise<Vector[]> {
     this.iterations = 0;
     let maxForceMagnitude;
     do {

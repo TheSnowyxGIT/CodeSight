@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import p5 from "p5";
+import type p5 from "p5";
 import { DrawingContext } from "@/lib/tasks/DrawingContext";
 
 export interface P5SketchProps {

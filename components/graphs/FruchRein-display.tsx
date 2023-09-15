@@ -3,7 +3,7 @@ import { GraphGenerator } from "@/lib/algorithms/graph-generate";
 import { Graph } from "@/lib/structs/Graph";
 import React, { Component, Ref, RefObject, createRef } from "react";
 import P5Sketch from "../p5/sketch.component";
-import p5 from "p5";
+import type p5 from "p5";
 import { TaskRunner } from "@/lib/tasks/task.runner";
 import { FruchReinRenderTask } from "@/lib/renderers/frunchRein.renderer.task";
 

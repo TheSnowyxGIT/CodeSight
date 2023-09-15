@@ -5,10 +5,8 @@ import { ThemeProvider, useTheme } from "@mui/material/styles";
 
 import "@/theme/globals.css";
 import "prismjs/themes/prism-tomorrow.css"; // Choose a theme that you like
-import Prism from "prismjs";
 import theme from "@/theme/theme";
 import { Button } from "@/components/ui/button";
-import { useEffect } from "react";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -17,9 +15,6 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  useEffect(() => {
-    Prism.highlightAll();
-  }, []);
   return (
     <html lang="en">
       <head></head>

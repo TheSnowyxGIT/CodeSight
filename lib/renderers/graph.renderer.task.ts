@@ -1,12 +1,12 @@
-import * as p5 from "p5";
 import { RenderTask, RenderTaskOptions } from "../tasks/render.task";
 import { Graph } from "../structs/Graph";
 import { MergePrepareData, PrepareData } from "../tasks/Task";
 import { Rectangle } from "../tasks/DrawingContext";
+import Vector from "../structs/Vector";
 
 export interface GraphRendererOptions {}
 export interface GraphRendererTaskPrepareData {
-  verticesPositions: p5.Vector[];
+  verticesPositions: Vector[];
 }
 export class GraphRendererTask extends RenderTask<GraphRendererOptions> {
   mouseHovered(): boolean {
@@ -15,7 +15,7 @@ export class GraphRendererTask extends RenderTask<GraphRendererOptions> {
   protected defaultOptions(): RenderTaskOptions {
     return {};
   }
-  protected verticesPositions: p5.Vector[];
+  protected verticesPositions: Vector[];
 
   constructor(protected graph: Graph) {
     super();
@@ -46,6 +46,7 @@ export class GraphRendererTask extends RenderTask<GraphRendererOptions> {
   }
 
   public onRun(): void {
+    //@ts-ignore
     this.dc.canvas.clear();
     const bounds = Rectangle.fromPoints(this.verticesPositions);
     this.dc.goTo(bounds.addSpace(1));

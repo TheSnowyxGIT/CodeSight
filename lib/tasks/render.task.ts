@@ -1,4 +1,3 @@
-import * as p5 from "p5";
 import { MergePrepareData, PrepareData, Task } from "./Task";
 import { DrawingContext } from "./DrawingContext";
 

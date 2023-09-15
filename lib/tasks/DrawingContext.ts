@@ -1,4 +1,5 @@
-import * as p5 from "p5";
+import Vector from "../structs/Vector";
+import type p5 from "p5";
 
 export class Rectangle {
   public x: number;
@@ -6,7 +7,7 @@ export class Rectangle {
   public width: number;
   public height: number;
 
-  static fromPoints(points: p5.Vector[]): Rectangle {
+  static fromPoints(points: Vector[]): Rectangle {
     let minX = points[0].x;
     let maxX = points[0].x;
     let minY = points[0].y;
@@ -42,11 +43,11 @@ export class Rectangle {
 export class DrawingContext {
   public canvas: p5;
   private scalingFactor: number = 1;
-  private translation: p5.Vector = new p5.Vector(0, 0);
+  private translation: Vector = new Vector(0, 0);
   public get ScalingFactor(): number {
     return this.scalingFactor;
   }
-  public get Translation(): p5.Vector {
+  public get Translation(): Vector {
     return this.translation;
   }
 
@@ -66,7 +67,7 @@ export class DrawingContext {
     const newCanvasHeight = canvasHeight / this.scalingFactor;
     const xTranslation = (newCanvasWidth - width) / 2;
     const yTranslation = (newCanvasHeight - height) / 2;
-    this.translation = new p5.Vector(-x + xTranslation, -y + yTranslation);
+    this.translation = new Vector(-x + xTranslation, -y + yTranslation);
     this.canvas.translate(this.translation.x, this.translation.y);
   }
 

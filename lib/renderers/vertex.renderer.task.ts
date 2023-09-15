@@ -1,4 +1,4 @@
-import * as p5 from "p5";
+import Vector from "../structs/Vector";
 import { Vertex } from "../structs/Vertex";
 import { MergePrepareData, TaskOption } from "../tasks/Task";
 import { RenderTask } from "../tasks/render.task";
@@ -10,12 +10,12 @@ export interface VertexRendererOptions {
 export abstract class VertexRendererTask<
   OPTIONS extends object = {}
 > extends RenderTask<OPTIONS & VertexRendererOptions> {
-  protected verticesPositions: p5.Vector[];
+  protected verticesPositions: Vector[];
   constructor(protected vertex: Vertex) {
     super();
   }
   prepare(
-    data: MergePrepareData<{ verticesPositions: p5.Vector[] }, RenderTask>
+    data: MergePrepareData<{ verticesPositions: Vector[] }, RenderTask>
   ): VertexRendererTask<OPTIONS> {
     super.prepare(data);
     this.verticesPositions = data.verticesPositions;
@@ -92,7 +92,7 @@ export class BasicVertexRendererTask extends VertexRendererTask<BasicVertexRende
     const vertex = this.vertex;
     const vector = this.verticesPositions[vertex.Id];
     const radius = this.options.radius;
-    const mouse = this.dc.canvas.createVector(
+    const mouse = new Vector(
       this.dc.canvas.mouseX / this.dc.ScalingFactor - this.dc.Translation.x,
       this.dc.canvas.mouseY / this.dc.ScalingFactor - this.dc.Translation.y
     );

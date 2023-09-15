@@ -1,5 +1,5 @@
-import * as p5 from "p5";
 import { Edge } from "../structs/Edge";
+import Vector from "../structs/Vector";
 import { MergePrepareData, TaskOption, PrepareData } from "../tasks/Task";
 import { RenderTask } from "../tasks/render.task";
 
@@ -10,12 +10,12 @@ export interface EdgeRendererOptions {
 export abstract class EdgeRendererTask<
   OPTION extends object = {}
 > extends RenderTask<OPTION & EdgeRendererOptions> {
-  protected verticesPositions: p5.Vector[];
+  protected verticesPositions: Vector[];
   constructor(protected edge: Edge) {
     super();
   }
   prepare(
-    data: MergePrepareData<{ verticesPositions: p5.Vector[] }, RenderTask>
+    data: MergePrepareData<{ verticesPositions: Vector[] }, RenderTask>
   ): EdgeRendererTask<OPTION> {
     super.prepare(data);
     this.verticesPositions = data.verticesPositions;
@@ -99,12 +99,12 @@ export class ProgressEdgeRendererTask extends EdgeRendererTask<ProgressEdgeRende
       [a, b] = [b, a];
     }
 
-    const direction = p5.Vector.sub(b, a).normalize();
-    const length = p5.Vector.sub(b, a).mag();
+    const direction = Vector.sub(b, a).normalize();
+    const length = Vector.sub(b, a).mag();
     const dt = this.dc.canvas.deltaTime;
 
     const currentLength = length * (this.current / this.options.duration);
-    const currentB = p5.Vector.add(a, direction.mult(currentLength));
+    const currentB = Vector.add(a, direction.mult(currentLength));
 
     this.dc.canvas.stroke(this.options.color);
     this.dc.canvas.strokeWeight(this.options.edgeWeight);
@@ -148,7 +148,7 @@ export class HSVEdgeRendererTask extends EdgeRendererTask<HSVEdgeRendererOptions
     let b = this.verticesPositions[edge.B.Id];
 
     const canvasWidth = this.dc.getWidth() / 2;
-    const length = p5.Vector.sub(b, a).mag();
+    const length = Vector.sub(b, a).mag();
     const minLength = canvasWidth / 5;
 
     const aa = (20 - 100) / (canvasWidth - minLength);
