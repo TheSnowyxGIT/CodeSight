@@ -345,7 +345,7 @@ const FruchtermanReingoldContentPage: React.FC<SideBarProps> = () => {
           Settings
         </a>
       </h3>
-      <div>
+      <div className="pb-16">
         <MathJax.Provider>
           <div className="flex flex-col mb-4">
             <div className="flex justify-between mb-2">

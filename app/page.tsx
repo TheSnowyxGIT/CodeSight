@@ -39,7 +39,6 @@ export default function Home() {
             >
               Get Started
             </a>
-            <Link href="/graphs/fruchterman-reingold">click here</Link>
           </div>
         </div>
         <div id="table-of-content" className="w-full relative pb-8">
