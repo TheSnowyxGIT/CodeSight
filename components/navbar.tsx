@@ -38,10 +38,10 @@ export function NavBar() {
         <div className="hidden md:flex mr-4">
           <a
             className="flex items-center space-x-6 text-sm font-medium"
-            href="/"
+            href={`${process.env.NEXT_PUBLIC_BASE_PATH}/`}
           >
             <Image
-              src="/code-sight-logo.png"
+              src={`${process.env.NEXT_PUBLIC_BASE_PATH}/code-sight-logo.png`}
               width={40}
               height={40}
               alt="Logo"
@@ -50,7 +50,12 @@ export function NavBar() {
           </a>
         </div>
         <a href="/" className="px-0 py-2 mr-3 h-auto md:hidden">
-          <Image src="/code-sight-logo.png" width={40} height={40} alt="Logo" />
+          <Image
+            src={`${process.env.NEXT_PUBLIC_BASE_PATH}/code-sight-logo.png`}
+            width={40}
+            height={40}
+            alt="Logo"
+          />
         </a>
         <div className="flex flex-1 items-center justify-between space-x-2 md:justify-end">
           <div className="w-full flex-1 md:w-auto md:flex-none">
@@ -72,7 +77,7 @@ export function NavBar() {
                 <CommandGroup heading="Suggestions">
                   <CommandItem
                     onSelect={() => {
-                      router.push("/");
+                      router.push(`/`);
                       setOpen(false);
                     }}
                   >
@@ -90,7 +95,7 @@ export function NavBar() {
                           <CommandItem
                             key={pageName}
                             onSelect={() => {
-                              router.push(page.link);
+                              router.push(`${page.link}`);
                               setOpen(false);
                             }}
                           >

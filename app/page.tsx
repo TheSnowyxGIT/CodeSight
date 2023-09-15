@@ -11,6 +11,7 @@ import { DocPages, categories } from "@/components/pages/pages";
 
 export default function Home() {
   const router = useRouter();
+  console.log(process.env.NEXT_PUBLIC_BASE_PATH);
   return (
     <main>
       <div className="w-full h-[calc(100vh-56px)]">
@@ -19,7 +20,7 @@ export default function Home() {
           <div className="z-10 flex flex-col items-center">
             <div className="flex items-center">
               <Image
-                src="/code-sight-logo.png"
+                src={`${process.env.NEXT_PUBLIC_BASE_PATH}/code-sight-logo.png`}
                 alt="Logo"
                 width={200}
                 height={200}
@@ -64,7 +65,7 @@ export default function Home() {
                           return (
                             <li key={pageName} className="mt-1">
                               <a
-                                href={page.link}
+                                href={`${process.env.NEXT_PUBLIC_BASE_PATH}${page.link}`}
                                 className="block border-l pl-4 border-slate-500 hover:border-slate-400 text-muted-foreground hover:text-foreground"
                               >
                                 {page.title}

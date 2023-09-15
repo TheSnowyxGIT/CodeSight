@@ -10,7 +10,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
-import PrismHighlightWrapper from "@/components/PrismMapper";
+import { Highlight } from "prism-react-renderer";
 
 interface SideBarProps {
   className?: string;
@@ -286,11 +286,19 @@ const FruchtermanReingoldContentPage: React.FC<SideBarProps> = () => {
           Pseudocode of the Algorithm
         </a>
       </h2>
-      <PrismHighlightWrapper>
-        <pre>
-          <code className="language-javascript language-js">{pseudoCode}</code>
-        </pre>
-      </PrismHighlightWrapper>
+      <Highlight language="ts" code={pseudoCode}>
+        {({ className, style, tokens, getLineProps, getTokenProps }) => (
+          <pre style={style}>
+            {tokens.map((line, i) => (
+              <div key={i} {...getLineProps({ line })}>
+                {line.map((token, key) => (
+                  <span key={key} {...getTokenProps({ token })} />
+                ))}
+              </div>
+            ))}
+          </pre>
+        )}
+      </Highlight>
 
       <h2 className="flex whitespace-pre-wrap" id="playground">
         <a className="group relative border-none lg:-ml-2 lg:pl-2 no-underline">

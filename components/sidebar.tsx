@@ -53,7 +53,10 @@ export default class SideBar extends React.Component<SideBarProps> {
                       }
                       return (
                         <li key={sub}>
-                          <a href={link} className={style}>
+                          <a
+                            href={`${process.env.NEXT_PUBLIC_BASE_PATH}${link}`}
+                            className={style}
+                          >
                             {sub}
                           </a>
                         </li>

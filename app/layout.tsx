@@ -4,7 +4,6 @@ import { Inter } from "next/font/google";
 import { ThemeProvider, useTheme } from "@mui/material/styles";
 
 import "@/theme/globals.css";
-import "prismjs/themes/prism-tomorrow.css"; // Choose a theme that you like
 import theme from "@/theme/theme";
 import { Button } from "@/components/ui/button";
 
