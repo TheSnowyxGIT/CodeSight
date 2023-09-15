@@ -8,10 +8,10 @@ import Image from "next/image";
 import { SocialIcon } from "react-social-icons";
 import { useRouter } from "next/navigation";
 import { DocPages, categories } from "@/components/pages/pages";
+import Link from "next/link";
 
 export default function Home() {
   const router = useRouter();
-  console.log(process.env.NEXT_PUBLIC_BASE_PATH);
   return (
     <main>
       <div className="w-full h-[calc(100vh-56px)]">
@@ -39,6 +39,7 @@ export default function Home() {
             >
               Get Started
             </a>
+            <Link href="/graphs/fruchterman-reingold">click here</Link>
           </div>
         </div>
         <div id="table-of-content" className="w-full relative pb-8">
