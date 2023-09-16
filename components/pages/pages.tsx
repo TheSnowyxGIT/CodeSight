@@ -3,6 +3,7 @@ import FruchtermanReingoldContentPage from "./graphs/Fruchterman-Reingold";
 
 export const categories: Record<string, string> = {
   graphs: "Graphs",
+  other: "Other",
 };
 
 export const DocPages: Record<
@@ -29,6 +30,14 @@ export const DocPages: Record<
       title: "Dijsktra-serach",
       subtitle:
         "Id sunt laboris aute eiusmod non et reprehenderit et labore elit reprehenderit.",
+      content: <div />,
+    },
+  },
+  other: {
+    quadtree: {
+      link: "/other/quadtree",
+      title: "Quadtree",
+      subtitle: "todo",
       content: <div />,
     },
   },
