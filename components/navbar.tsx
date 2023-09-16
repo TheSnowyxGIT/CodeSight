@@ -77,7 +77,7 @@ export function NavBar() {
                 <CommandGroup heading="Suggestions">
                   <CommandItem
                     onSelect={() => {
-                      router.replace(`${process.env.NEXT_PUBLIC_BASE_PATH}/`);
+                      router.replace(`/`);
                       setOpen(false);
                     }}
                   >
