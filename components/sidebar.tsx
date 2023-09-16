@@ -22,7 +22,7 @@ import {
   CommandShortcut,
 } from "@/components/ui/command";
 import { Button } from "./ui/button";
-import { DocPages } from "./pages/pages";
+import { DocPages, categories } from "./pages/pages";
 
 export interface SideBarProps {
   className?: string;
@@ -35,12 +35,13 @@ export default class SideBar extends React.Component<SideBarProps> {
       <div className="hidden lg:block fixed z-20 inset-0 top-[3.8125rem] left-[max(0px,calc(50%-55rem))] right-auto 3xl:w-[22rem] 2xl:w-[19rem] lg:w-[14rem] pb-10 pl-8 pr-6 overflow-y-auto">
         <nav className="lg:text-sm lg:leading-6 relative">
           <ul>
-            {Object.keys(DocPages).map((page) => {
-              const subs = DocPages[page];
+            {Object.keys(categories).map((cat) => {
+              const catTitle = categories[cat];
+              const subs = DocPages[cat];
               return (
-                <li key={page} className="mt-12 lg:mt-8">
+                <li key={cat} className="mt-12 lg:mt-8">
                   <h5 className="mb-8 lg:mb-3 font-semibold text-slate-900 dark:text-slate-200">
-                    {page}
+                    {catTitle}
                   </h5>
                   <ul>
                     {Object.keys(subs).map((sub) => {
@@ -57,7 +58,7 @@ export default class SideBar extends React.Component<SideBarProps> {
                             href={`${process.env.NEXT_PUBLIC_BASE_PATH}${link}`}
                             className={style}
                           >
-                            {sub}
+                            {subs[sub].title}
                           </a>
                         </li>
                       );

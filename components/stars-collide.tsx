@@ -3,7 +3,8 @@ import React, { Component } from "react";
 import P5Sketch from "./p5/sketch.component";
 import MovingPoint from "@/lib/MovingPoint";
 import type p5 from "p5";
-import { Box, Circle, Point, QuadTree } from "js-quadtree";
+import { Box, Circle, Point } from "js-quadtree";
+import QuadTree from "@/lib/structs/QuadTree";
 
 export interface StarsCollideProps {
   className?: string;
@@ -26,12 +27,7 @@ export default class StarsCollide extends Component<StarsCollideProps> {
   };
 
   private makeQuadTree = (p5: p5) => {
-    const quadTree = new QuadTree(new Box(0, 0, p5.width, p5.height), {
-      capacity: 4,
-      maximumDepth: 10,
-      removeEmptyNodes: true,
-    });
-    quadTree.clear();
+    const quadTree = new QuadTree(new Box(0, 0, p5.width, p5.height));
     for (let i = 0; i < this.points.length; i++) {
       quadTree.insert(
         new Point(this.points[i].x, this.points[i].y, this.points[i])

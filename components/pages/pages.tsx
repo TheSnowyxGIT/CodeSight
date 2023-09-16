@@ -1,5 +1,6 @@
 import { ReactElement } from "react";
 import FruchtermanReingoldContentPage from "./graphs/Fruchterman-Reingold";
+import QuadTreeContentPage from "./other/QuadTree";
 
 export const categories: Record<string, string> = {
   graphs: "Graphs",
@@ -37,8 +38,8 @@ export const DocPages: Record<
     quadtree: {
       link: "/other/quadtree",
       title: "Quadtree",
-      subtitle: "todo",
-      content: <div />,
+      subtitle: "Hierarchical Spatial Data Structure",
+      content: <QuadTreeContentPage />,
     },
   },
 };
