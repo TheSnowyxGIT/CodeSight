@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import FruchReinDisplay from "@/components/graphs/FruchRein-display";
 import MathJax from "react-mathjax";
 import {
@@ -14,6 +14,7 @@ import { Highlight } from "prism-react-renderer";
 import QuadTreeDemo from "@/components/QuadTreeDemo";
 import { Switch } from "@/components/ui/switch";
 import { Progress } from "@/components/ui/progress";
+import { useMediaQuery } from "react-responsive";
 
 const pseudoCode = `
 class ForceDirectedLayout {
@@ -101,6 +102,11 @@ const QuadTreeContentPage: React.FC = () => {
   const [fps, setFPS] = React.useState(60);
   const [showQuadtree, setShowQuadtree] = React.useState(true);
 
+  const isMobile = useMediaQuery({ query: `(max-width: 760px)` });
+  useEffect(() => {
+    setNbPoints(isMobile ? 100 : 500);
+  }, []);
+
   return (
     <MathJax.Provider>
       <div className="pt-4 prose max-w-none ml prose-slate dark:prose-invert">
@@ -111,7 +117,7 @@ const QuadTreeContentPage: React.FC = () => {
           >
             Go to Benchmark
           </a>
-          <QuadTreeDemo defaultNumberOfPoints={100} />
+          <QuadTreeDemo defaultNumberOfPoints={isMobile ? 50 : 100} />
         </div>
         <h2 className="flex whitespace-pre-wrap">
           <a className="group relative border-none lg:-ml-2 lg:pl-2 no-underline">
