@@ -15,6 +15,20 @@ export default class StarsCollide extends Component<StarsCollideProps> {
   private speedRange = [30, 60];
   private maxDetectionRadius = 150;
 
+  private interpolateColor(p5: p5, value: number) {
+    const ratio = value / 100;
+
+    const startColor = [57, 0, 153];
+    const endColor = [255, 84, 0];
+
+    const r = Math.round(startColor[0] + ratio * (endColor[0] - startColor[0]));
+    const g = Math.round(startColor[1] + ratio * (endColor[1] - startColor[1]));
+    const b = Math.round(startColor[2] + ratio * (endColor[2] - startColor[2]));
+
+    p5.colorMode(p5.RGB);
+    return p5.color(r, g, b);
+  }
+
   private getNumberOfPointsBySize = (p5: p5) => {
     const v1 = { pixels: 400 * 800, nb: 30 };
     const v2 = { pixels: 1300 * 800, nb: 100 };
@@ -72,7 +86,7 @@ export default class StarsCollide extends Component<StarsCollideProps> {
   private draw = (p5: p5) => {
     p5.colorMode(p5.RGB);
     p5.background(15, 23, 42);
-    p5.colorMode(p5.HSB, p5.width, 100, 100, 100);
+    p5.colorMode(p5.RGB);
     if (p5.deltaTime > 2000) {
       this.setup(p5);
       return;
@@ -107,18 +121,14 @@ export default class StarsCollide extends Component<StarsCollideProps> {
             .createVector(pointI.x, pointI.y)
             .dist(p5.createVector(pointJ.x, pointJ.y));
 
-          const color = p5.color(
-            (pointI.x + pointsInRange[j].x) / 2,
-            100,
-            100,
-            this.getOpacity(distance)
-          );
+          const ratio = ((pointI.x + pointsInRange[j].x) / 2 / p5.width) * 100;
+          const color = this.interpolateColor(p5, ratio);
           p5.stroke(color);
           p5.line(pointI.x, pointI.y, pointJ.x, pointJ.y);
         }
       }
       p5.noStroke();
-      p5.fill(0, 0, 100);
+      p5.fill(255, 255, 255);
       this.glow(p5, "#fff", 10);
       p5.circle(pointI.x, pointI.y, 5);
       this.glow(p5, "#fff", 30);

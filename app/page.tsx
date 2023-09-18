@@ -1,14 +1,13 @@
 "use client";
 import StarsCollide from "@/components/stars-collide";
-import theme from "@/theme/theme";
-import { TreeItem, TreeView } from "@mui/lab";
 import { Tally1Icon, Tally2Icon } from "lucide-react";
-import { ThemeProvider, useTheme } from "@mui/material/styles";
 import Image from "next/image";
 import { SocialIcon } from "react-social-icons";
 import { useRouter } from "next/navigation";
 import { DocPages, categories } from "@/components/pages/pages";
-import Link from "next/link";
+import { Pacifico } from "next/font/google";
+
+const pacifico = Pacifico({ weight: "400", subsets: ["latin"] });
 
 export default function Home() {
   const router = useRouter();
@@ -16,7 +15,7 @@ export default function Home() {
     <main>
       <div className="w-full h-[calc(100vh-56px)]">
         <div className="h-full w-full relative flex justify-center items-center">
-          <StarsCollide className="absolute top-0 bottom-0 left-0 right-0 z-0" />
+          <StarsCollide className="fixed top-0 bottom-0 left-0 right-0 z-0" />
           <div className="z-10 flex flex-col items-center">
             <div className="flex items-center">
               <Image
@@ -26,12 +25,16 @@ export default function Home() {
                 height={200}
                 className="lg:h-[200px] lg:w-[200px] h-[100px] w-[100px]"
               />
-              <h1 className="text-foreground ml-4 text-5xl lg:text-6xl">
+              <h1
+                className={`text-foreground ml-4 text-5xl lg:text-7xl ${pacifico.className}`}
+              >
                 CodeSight
               </h1>
             </div>
-            <h2 className="text-foreground text-xl my-4">
-              Algorithms Visualizer Demo WedSite
+            <h2
+              className={`text-foreground text-2xl my-4 ${pacifico.className} text-center`}
+            >
+              Algorithms Visualizer Demo WebSite
             </h2>
             <a
               href="#table-of-content"
@@ -41,9 +44,12 @@ export default function Home() {
             </a>
           </div>
         </div>
-        <div id="table-of-content" className="w-full relative pb-8">
+        <div
+          id="table-of-content"
+          className="w-full relative pb-8 bg-[#121723] min-h-[700px]"
+        >
           <div className="container">
-            <div className="flex flex-col mt-8">
+            <div className="flex flex-col pt-8 ">
               <h2 className="text-foreground text-2xl">Algorithms</h2>
               <span className="text-sky-500 text-sm">
                 Choose the algorithm you want to visualize..
@@ -53,7 +59,10 @@ export default function Home() {
               {Object.keys(categories).map((category) => {
                 const categoryTitle = categories[category];
                 return (
-                  <div key={category} className="">
+                  <div
+                    key={category}
+                    className="bg-white bg-opacity-10 w-full p-10 rounded-lg"
+                  >
                     <div className="flex items-center m-4">
                       <Tally1Icon className="mr-2 h-8 w-8" />
                       <h3 className="text-xl">{categoryTitle}</h3>
@@ -81,11 +90,12 @@ export default function Home() {
             </div>
           </div>
         </div>
-        <div className="footer py-8">
-          <div className="container border-t border-slate-500"></div>
-          <div className="flex flex-col justify-center items-center mt-6">
+        <div className="footer py-20 bg-transparent relative">
+          <div className="flex flex-col justify-center items-center mt-6 z-10">
             <span className="text-slate-400">Made by</span>
-            <span className="text-foreground text-xl">Adrien Pingard</span>
+            <span className={`text-foreground text-2xl ${pacifico.className}`}>
+              Adrien Pingard
+            </span>
           </div>
           <div className="flex justify-center items-center mt-4 gap-4">
             <a

@@ -13,9 +13,12 @@ import {
   CommandSeparator,
   CommandShortcut,
 } from "@/components/ui/command";
+import { Pacifico } from "next/font/google";
 import { Button } from "./ui/button";
 import { categories, DocPages } from "./pages/pages";
 import { useRouter } from "next/navigation";
+
+const pacifico = Pacifico({ weight: "400", subsets: ["latin"] });
 
 export function NavBar() {
   const router = useRouter();
@@ -37,7 +40,7 @@ export function NavBar() {
       <div className="container h-14 flex items-center">
         <div className="hidden md:flex mr-4">
           <a
-            className="flex items-center space-x-6 text-sm font-medium"
+            className="flex items-center space-x-3 text-sm font-medium"
             href={`${process.env.NEXT_PUBLIC_BASE_PATH}/`}
           >
             <Image
@@ -46,7 +49,7 @@ export function NavBar() {
               height={40}
               alt="Logo"
             />
-            <span className="">CodeSight</span>
+            <span className={`${pacifico.className} text-lg`}>CodeSight</span>
           </a>
         </div>
         <a href="/" className="px-0 py-2 mr-3 h-auto md:hidden">
