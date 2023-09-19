@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import { Highlight } from "prism-react-renderer";
-import QuadTreeDemo from "@/components/QuadTreeDemo";
+import QuadTreeDemo from "@/components/demos/QuadTreeDemo";
 import { Switch } from "@/components/ui/switch";
 import { Progress } from "@/components/ui/progress";
 import { useMediaQuery } from "react-responsive";

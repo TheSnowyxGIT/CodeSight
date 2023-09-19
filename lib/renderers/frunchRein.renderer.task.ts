@@ -134,6 +134,13 @@ export class FruchReinRenderTask extends RenderTask<FruchReinRendererOptions> {
       dc: data.dc,
       verticesPositions: this.verticesPositions,
     });
+    for (const vertex of this.graph.getVertices()) {
+      vertex.RenderTask.removeAllListeners("click");
+      vertex.RenderTask.on("click", () => {
+        this.emit("vertexClicked", vertex);
+      });
+    }
+
     this.iterations = 0;
     return this;
   }

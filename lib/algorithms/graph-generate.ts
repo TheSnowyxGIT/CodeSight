@@ -54,4 +54,16 @@ export class GraphGenerator extends EventDispatcher {
 
     return graph;
   }
+
+  public async applyWeights(
+    graph: Graph,
+    min: number,
+    max: number
+  ): Promise<Graph> {
+    for (const edge of graph.getEdges()) {
+      const weight = Math.floor(Math.random() * (max - min + 1) + min);
+      edge.Weight = weight;
+    }
+    return graph;
+  }
 }

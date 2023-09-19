@@ -1,6 +1,6 @@
 "use client";
 import React, { Component } from "react";
-import P5Sketch from "./p5/sketch.component";
+import P5Sketch from "../p5/sketch.component";
 import MovingPoint from "@/lib/MovingPoint";
 import type p5 from "p5";
 import { Box, Circle, Point } from "js-quadtree";

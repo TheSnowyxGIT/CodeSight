@@ -81,6 +81,28 @@ export abstract class Graph extends Drawable<GraphRendererTask> {
     return edges;
   }
 
+  public getEdgesFromVertices(a: Vertex, b: Vertex): Edge[] {
+    if (a.Id < 0 || a.Id >= this.getVerticesNumber()) {
+      throw new Error(`Invalid a vertex: ${a}`);
+    }
+    if (b.Id < 0 || b.Id >= this.getVerticesNumber()) {
+      throw new Error(`Invalid b vertex: ${b}`);
+    }
+    const edges: Edge[] = [];
+    for (const edge of this.getEdges()) {
+      if (edge.A.Id === a.Id && edge.B.Id === b.Id) {
+        edges.push(edge);
+      } else if (
+        !this.isDirected() &&
+        edge.B.Id === a.Id &&
+        edge.A.Id === b.Id
+      ) {
+        edges.push(edge);
+      }
+    }
+    return edges;
+  }
+
   public getDegree(vertex: Vertex): number {
     return this.getAdjacentVertices(vertex).size;
   }

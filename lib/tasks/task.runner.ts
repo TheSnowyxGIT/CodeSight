@@ -10,9 +10,10 @@ export class TaskRunner {
       this.currentTask = this.taskQueue.shift();
     }
     if (this.currentTask !== null) {
-      this.currentTask.run();
       if (this.currentTask.isFinished()) {
         this.currentTask = null;
+      } else {
+        this.currentTask.run();
       }
     }
   }

@@ -78,6 +78,7 @@ export abstract class RenderTask<OPTION extends object = {}> extends Task<
       this.isPress = true;
     } else {
       if (!this.dc.canvas.mouseIsPressed && this.isPress && this.isHover) {
+        this.dc.canvas.cursor("default");
         this.emit("click");
       }
       this.isPress = false;

@@ -6,6 +6,7 @@ import { RenderTask } from "../tasks/render.task";
 export interface EdgeRendererOptions {
   color: string;
   edgeWeight: number;
+  showWeight: boolean;
 }
 export abstract class EdgeRendererTask<
   OPTION extends object = {}
@@ -47,6 +48,7 @@ export class BasicEdgeRenderer extends EdgeRendererTask<BasicEdgeRendererOptions
     return {
       color: "#ffffff",
       edgeWeight: 0.1,
+      showWeight: false,
     };
   }
   onRun(): void {
@@ -57,6 +59,13 @@ export class BasicEdgeRenderer extends EdgeRendererTask<BasicEdgeRendererOptions
     this.dc.canvas.stroke(this.options.color);
     this.dc.canvas.strokeWeight(this.options.edgeWeight);
     this.dc.canvas.line(a.x, a.y, b.x, b.y);
+
+    if (this.options.showWeight && edge.Weight !== undefined) {
+      this.dc.canvas.textAlign("left", "center");
+      this.dc.canvas.textSize(1.5);
+
+      this.dc.canvas.text(edge.Weight, (a.x + b.x) / 2, (a.y + b.y) / 2);
+    }
 
     this.done();
   }
@@ -79,6 +88,7 @@ export class ProgressEdgeRendererTask extends EdgeRendererTask<ProgressEdgeRende
       reversed: false,
       edgeWeight: 0.1,
       duration: 1000,
+      showWeight: false,
     };
   }
   private current: number = 0;
@@ -132,6 +142,7 @@ export class HSVEdgeRendererTask extends EdgeRendererTask<HSVEdgeRendererOptions
     return {
       color: "#000000",
       edgeWeight: 0.1,
+      showWeight: false,
     };
   }
 

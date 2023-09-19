@@ -1,10 +1,12 @@
 import { RenderTask, RenderTaskOptions } from "../tasks/render.task";
 import { Graph } from "../structs/Graph";
-import { MergePrepareData, PrepareData } from "../tasks/Task";
+import { MergePrepareData, PrepareData, TaskOption } from "../tasks/Task";
 import { Rectangle } from "../tasks/DrawingContext";
 import Vector from "../structs/Vector";
 
-export interface GraphRendererOptions {}
+export interface GraphRendererOptions {
+  padding: number;
+}
 export interface GraphRendererTaskPrepareData {
   verticesPositions: Vector[];
 }
@@ -12,8 +14,10 @@ export class GraphRendererTask extends RenderTask<GraphRendererOptions> {
   mouseHovered(): boolean {
     return false;
   }
-  protected defaultOptions(): RenderTaskOptions {
-    return {};
+  protected defaultOptions(): TaskOption<GraphRendererTask> {
+    return {
+      padding: 1,
+    };
   }
   protected verticesPositions: Vector[];
 
@@ -49,7 +53,7 @@ export class GraphRendererTask extends RenderTask<GraphRendererOptions> {
     //@ts-ignore
     this.dc.canvas.clear();
     const bounds = Rectangle.fromPoints(this.verticesPositions);
-    this.dc.goTo(bounds.addSpace(1));
+    this.dc.goTo(bounds.addSpace(this.options.padding));
 
     let allFinished = true;
     for (const edge of this.graph.getEdges()) {

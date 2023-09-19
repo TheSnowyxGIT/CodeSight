@@ -1,6 +1,7 @@
 import { ReactElement } from "react";
 import FruchtermanReingoldContentPage from "./graphs/Fruchterman-Reingold";
 import QuadTreeContentPage from "./other/QuadTree";
+import DijkstraContentPage from "./graphs/Dijkstra";
 
 export const categories: Record<string, string> = {
   graphs: "Graphs",
@@ -26,12 +27,11 @@ export const DocPages: Record<
       subtitle: "Force-directed graph drawing algorithm",
       content: <FruchtermanReingoldContentPage />,
     },
-    "dijskra-search": {
-      link: "/graphs/dijskra-search",
-      title: "Dijsktra-serach",
-      subtitle:
-        "Id sunt laboris aute eiusmod non et reprehenderit et labore elit reprehenderit.",
-      content: <div />,
+    dijkstra: {
+      link: "/graphs/dijkstra",
+      title: "Dijkstra's Algorithm",
+      subtitle: "Finding Shortest Paths in Weighted Graphs",
+      content: <DijkstraContentPage />,
     },
   },
   other: {
