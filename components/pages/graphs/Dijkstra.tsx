@@ -2,17 +2,12 @@
 import React, { ReactElement } from "react";
 import FruchReinDisplay from "@/components/graphs/FruchRein-display";
 import MathJax from "react-mathjax";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+
 import { Slider } from "@/components/ui/slider";
 import { Highlight } from "prism-react-renderer";
 import DijkstraDemo from "@/components/demos/DijkstraDemo";
 import InfoBox from "@/components/boxes/infoBox";
+import { Vertex } from "@/lib/structs/Vertex";
 
 const pseudoCode = `
 import { Graph, Vertex, Edge } from './yourGraphLibrary'; // Import necessary graph-related classes/interfaces
@@ -87,6 +82,10 @@ interface DijkstraProps {
 const DijkstraContentPage: React.FC<DijkstraProps> = () => {
   const [box, setBox] = React.useState<ReactElement>(<>Wait...</>);
   const [needNext, setNeedNext] = React.useState<boolean>(false);
+  const [recap, setRecap] = React.useState<Map<
+    Vertex,
+    { finished: boolean; recap: [{ distance: number; previous?: Vertex }] }
+  > | null>(null);
   const dijkstraRef = React.useRef<DijkstraDemo>(null);
 
   return (
@@ -214,10 +213,20 @@ const DijkstraContentPage: React.FC<DijkstraProps> = () => {
           </a>
         </h2>
         <div className="pb-[300px]">
+          <button
+            type="button"
+            onClick={() => {
+              dijkstraRef.current?.reset();
+            }}
+            className="not-prose relative flex-none text-sm text-center font-semibold text-white py-2.5 px-4 rounded-lg bg-slate-900 dark:bg-sky-500 dark:text-white focus:outline-none hover:bg-slate-700 focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 dark:highlight-white/20 dark:hover:bg-sky-400 dark:focus:ring-2 dark:focus:ring-sky-600 dark:focus:ring-offset-slate-900"
+          >
+            Reset
+          </button>
           <DijkstraDemo
             ref={dijkstraRef}
             onNewBox={setBox}
             onNeedNext={setNeedNext}
+            onRecapChange={setRecap}
             className="h-[300px] lg:h-[600px]"
           />
           <InfoBox
@@ -225,9 +234,11 @@ const DijkstraContentPage: React.FC<DijkstraProps> = () => {
               dijkstraRef.current?.next();
             }}
             nextable={needNext}
+            className="min-h-[100px] mb-4 text-sm lg:text-base"
           >
             {box}
           </InfoBox>
+          <div>{recap && <RecapDijkstraBox data={recap} />}</div>
         </div>
       </div>
     </MathJax.Provider>
@@ -235,3 +246,85 @@ const DijkstraContentPage: React.FC<DijkstraProps> = () => {
 };
 
 export default DijkstraContentPage;
+
+interface RecapDijkstraBoxProps {
+  className?: string;
+  data: Map<
+    Vertex,
+    { finished: boolean; recap: [{ distance: number; previous?: Vertex }] }
+  >;
+}
+
+const RecapDijkstraBox: React.FC<RecapDijkstraBoxProps> = (
+  props: RecapDijkstraBoxProps
+) => {
+  const depth = Array.from(props.data.values()).reduce((acc, curr) => {
+    return Math.max(acc, curr.recap.length);
+  }, 0);
+  let rows = [];
+  let finishArray: boolean[] = [];
+  for (let i = 0; i < depth; i++) {
+    let map = new Map();
+    for (const [vertex, value] of props.data) {
+      if (value.finished) {
+        finishArray.push(true);
+      } else {
+        finishArray.push(false);
+      }
+      map.set(vertex, value.recap[i]);
+    }
+    rows.push(map);
+  }
+
+  return (
+    <div className="w-full rounded-lg bg-[#00ff0020] border-[1px] border-[#00ff0060]">
+      <MathJax.Provider>
+        <table className="table-fixed m-1">
+          <thead>
+            <tr>
+              {Array.from(props.data.keys()).map((key) => (
+                <th key={key.tag()} className="px-2 text-center">
+                  {key.tag()}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((row, i) => (
+              <tr key={i}>
+                {Array.from(row.values()).map((value, i2) => {
+                  const finished = finishArray[i2];
+                  if (!value) {
+                    return <td key={i2} className="px-2"></td>;
+                  } else {
+                    return (
+                      <td
+                        key={i2}
+                        className={`px-2 text-center ${
+                          finished ? "text-pink-400" : ""
+                        }`}
+                      >
+                        <MathJax.Node
+                          inline
+                          formula={
+                            value.distance === Infinity
+                              ? String.raw`\infty`
+                              : value.previous
+                              ? String.raw`${
+                                  value.distance
+                                }_${value.previous?.tag()}`
+                              : String.raw`${value.distance}`
+                          }
+                        />
+                      </td>
+                    );
+                  }
+                })}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </MathJax.Provider>
+    </div>
+  );
+};

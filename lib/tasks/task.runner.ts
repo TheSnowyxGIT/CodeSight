@@ -28,5 +28,6 @@ export class TaskRunner {
   clear() {
     this.taskQueue = [];
     this.currentTask = null;
+    this.running = false;
   }
 }

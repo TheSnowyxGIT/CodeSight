@@ -9,8 +9,12 @@ interface InfoBoxProps {
 
 const InfoBox: React.FC<InfoBoxProps> = (props: InfoBoxProps) => {
   return (
-    <div className="w-full rounded-lg bg-[#00ff0020] border-[1px] border-[#00ff0060]">
-      <div className="h-full flex flex-col items-center justify-between lg:flex-row ml-10 my-2 mr-4 gap-2">
+    <div
+      className={`${[
+        props.className ?? "",
+      ]} w-full rounded-lg bg-[#00ff0020] border-[1px] border-[#00ff0060]`}
+    >
+      <div className="h-full flex items-center flex-col-reverse lg:items-start justify-between lg:flex-row ml-10 my-2 mr-4 gap-2">
         <span className="inline-block">{props.children}</span>
         {props.nextable && (
           <button

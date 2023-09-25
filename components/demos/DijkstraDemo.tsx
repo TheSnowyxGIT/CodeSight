@@ -27,6 +27,12 @@ export interface DijkstraDemoProps {
   className?: string;
   onNewBox?: (children: ReactElement) => void;
   onNeedNext?: (value: boolean) => void;
+  onRecapChange?: (
+    recap: Map<
+      Vertex,
+      { finished: boolean; recap: [{ distance: number; previous?: Vertex }] }
+    >
+  ) => void;
 }
 
 export default class DijkstraDemo extends Component<DijkstraDemoProps> {
@@ -35,6 +41,12 @@ export default class DijkstraDemo extends Component<DijkstraDemoProps> {
   private taskRunner: TaskRunner;
   private fruchReinTask: FruchReinRenderTask;
   private p5Sketch: RefObject<P5Sketch>;
+
+  private recapMap: Map<
+    Vertex,
+    { finished: boolean; recap: [{ distance: number; previous?: Vertex }] }
+  >;
+  private originalVertex: Vertex | null = null;
 
   constructor(props: DijkstraDemoProps) {
     super(props);
@@ -52,6 +64,11 @@ export default class DijkstraDemo extends Component<DijkstraDemoProps> {
       this.nextResolve = resolve;
     });
     await this.nextPromise;
+  }
+
+  public reset() {
+    this.taskRunner.clear();
+    this.start();
   }
 
   private edgeRenderTask(edge: Edge, color = "gray"): EdgeRendererTask {
@@ -122,9 +139,27 @@ export default class DijkstraDemo extends Component<DijkstraDemoProps> {
     this._setBox(children);
   }
 
-  async componentDidMount(): Promise<void> {
+  private addLineRecap() {
+    this.recapMap.forEach((value, vertex) => {
+      if (value.finished) {
+        return;
+      }
+      const length = value.recap.length;
+      value.recap.push({
+        distance: value.recap[length - 1].distance,
+        previous: value.recap[length - 1].previous,
+      });
+    });
+  }
+
+  private async generateGraph() {
     const graphGenerator = new GraphGenerator();
     this.graph = await graphGenerator.basicGenerate(8, 10);
+    await graphGenerator.applyWeights(this.graph, 1, 10);
+  }
+
+  private async start() {
+    await this.generateGraph();
     this.graph.RenderTask.options.padding = 4;
     for (const edge of this.graph.getEdges()) {
       edge.setRenderTask(this.edgeRenderTask(edge));
@@ -133,17 +168,28 @@ export default class DijkstraDemo extends Component<DijkstraDemoProps> {
       vertex.setRenderTask(this.vertexRenderTask(vertex));
     }
 
-    await graphGenerator.applyWeights(this.graph, 1, 10);
     this.fruchReinTask = new FruchReinRenderTask(this.graph);
     this.fruchReinTask.options.l = 15;
     // wait p5 to be loaded
     await this.p5Sketch.current?.loaded;
+
+    this._setBox = null;
+    this.setBox(<>Wait for graph rendering...</>);
+    this.props.onNeedNext(false);
+
+    this.props?.onRecapChange(null);
+
     await this.taskRunner.startTask(this.fruchReinTask, {
       dc: this.p5Sketch.current.dc,
     });
+
     const dijkstra = new Dijkstra();
     dijkstra.addSubscriber(this.onEvent.bind(this));
     dijkstra.dijkstra(this.graph);
+  }
+
+  async componentDidMount(): Promise<void> {
+    await this.start();
   }
 
   private async onEvent(
@@ -163,6 +209,16 @@ export default class DijkstraDemo extends Component<DijkstraDemoProps> {
       return await this.verticesUpdates(payload);
     } else if (value === "finish") {
       return await this.finish(payload);
+    } else if (value === "init") {
+      const distances = payload;
+      this.recapMap = new Map();
+      for (const vertex of this.graph.getVertices()) {
+        this.recapMap.set(vertex, {
+          finished: false,
+          recap: [{ distance: distances.get(vertex) }],
+        });
+      }
+      this.props?.onRecapChange(this.recapMap);
     }
   }
 
@@ -202,6 +258,10 @@ export default class DijkstraDemo extends Component<DijkstraDemoProps> {
     );
     this.props.onNeedNext(true);
     vertex.setRenderTask(this.vertexRenderTask(vertex, "green"));
+
+    this.recapMap.get(vertex).recap[0].distance = 0;
+    this.props?.onRecapChange(this.recapMap);
+
     this.waitNext().then(() => {
       this.fruchReinTask.stop();
     });
@@ -209,6 +269,7 @@ export default class DijkstraDemo extends Component<DijkstraDemoProps> {
       dc: this.p5Sketch.current.dc,
     });
 
+    this.originalVertex = vertex;
     return vertex;
   }
 
@@ -237,13 +298,25 @@ export default class DijkstraDemo extends Component<DijkstraDemoProps> {
     for (const vertex of unvisited) {
       vertex.setRenderTask(this.vertexRenderTask(vertex));
     }
-    this.setBox(
-      <>
-        The vertex with the shortest distance is{" "}
-        <strong>{current.tag()}</strong> with a distance of{" "}
-        <strong>{distances.get(current)}</strong>.
-      </>
-    );
+    if (current === null) {
+      this.setBox(
+        <>
+          The rest of the vertices are not connected to the graph. So the
+          algorithm is finished.
+        </>
+      );
+      await this.waitNext();
+      return;
+    } else {
+      this.setBox(
+        <>
+          The vertex with the shortest distance is{" "}
+          <strong>{current.tag()}</strong> with a distance of{" "}
+          <strong>{distances.get(current)}</strong>.
+        </>
+      );
+    }
+
     (current as Vertex).setRenderTask(this.vertexRenderTask(current, "green"));
     this.waitNext().then(() => {
       this.fruchReinTask.stop();
@@ -256,6 +329,9 @@ export default class DijkstraDemo extends Component<DijkstraDemoProps> {
 
   private async lockVertex(payload: any) {
     const { current, unvisited, previous, distances } = payload;
+
+    this.recapMap.get(current).finished = true;
+    this.props?.onRecapChange(this.recapMap);
     // Info box setup
     const path = Dijkstra.getPath(current, previous);
     if (path.length === 1) {
@@ -272,6 +348,7 @@ export default class DijkstraDemo extends Component<DijkstraDemoProps> {
         {path.map((vertex) => vertex.tag()).join(" -> ")}
       </>
     );
+
     this.fruchReinTask.options.onlyManualStop = true;
     (current as Vertex).setRenderTask(this.vertexRenderTask(current, "green"));
     this.waitNext().then(() => {
@@ -285,6 +362,9 @@ export default class DijkstraDemo extends Component<DijkstraDemoProps> {
 
   private async adjacentVerticesUnvisited(payload: any) {
     const { adjVerticesUnvisited, visited, current } = payload;
+    this.addLineRecap();
+    console.log("new line", this.recapMap);
+    this.props?.onRecapChange(this.recapMap);
     // Info box setup
     if (adjVerticesUnvisited.length === 0) {
       this.setBox(
@@ -298,11 +378,15 @@ export default class DijkstraDemo extends Component<DijkstraDemoProps> {
         <>
           The following vertices are <strong>unvisited adjacent</strong>{" "}
           vertices of the vertex <strong>{current.tag()}</strong>:
-          <ul>
-            {adjVerticesUnvisited.map((vertex: Vertex) => (
-              <li key={vertex.tag()}>{vertex.tag()}</li>
-            ))}
-          </ul>
+          <table className="m-1">
+            <tbody>
+              {adjVerticesUnvisited.map((vertex: Vertex) => (
+                <td key={vertex.tag()} className="text-center">
+                  {vertex.tag()}
+                </td>
+              ))}
+            </tbody>
+          </table>
           For each of these vertices, we will check if the distance to them from
           the vertex <strong>{current.tag()}</strong> is shorter than the
           distance we already have.
@@ -348,11 +432,16 @@ export default class DijkstraDemo extends Component<DijkstraDemoProps> {
     if (adjVerticesUnvisited.length === 0) {
       return;
     }
+
     for (const adjVertex of adjVerticesUnvisited) {
       const { upgrade, edge, newDistance, previousDistance } = (
         recap as Map<Vertex, any>
       ).get(adjVertex);
       if (upgrade) {
+        const recap = this.recapMap.get(adjVertex).recap;
+        recap[recap.length - 1].distance = newDistance;
+        recap[recap.length - 1].previous = currentVertex;
+        this.props?.onRecapChange(this.recapMap);
         this.setBox(
           <>
             For the vertex <strong>{adjVertex.tag()}</strong>, the path using
@@ -398,7 +487,18 @@ export default class DijkstraDemo extends Component<DijkstraDemoProps> {
     }
   }
 
-  private async finish(payload: any) {}
+  private async finish(payload: any) {
+    this.setBox(
+      <>
+        The algorithm is finished. <br />
+        <br />
+        You can read the <strong>recap</strong> below to see the shortest path
+        from the vertex <strong>{this.originalVertex.tag()}</strong> to any
+        other vertex.
+      </>
+    );
+    this.props.onNeedNext(false);
+  }
 
   private setup = (p5: p5) => {};
 

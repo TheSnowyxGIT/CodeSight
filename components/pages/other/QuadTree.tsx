@@ -17,80 +17,110 @@ import { Progress } from "@/components/ui/progress";
 import { useMediaQuery } from "react-responsive";
 
 const pseudoCode = `
-class ForceDirectedLayout {
-    graph: Graph
-    C_rep: number
-    C_spring: number
-    l: number
-    verticesPositions: Array of Vectors
-    maxIterations: number
-    thresholdForce: number
-    iterations: number
-    
-    Initialize(graph: Graph) {
-        // Store the graph
-        // Set constants C_rep, C_spring, and l
-        // Initialize verticesPositions with random positions
-        // Set maxIterations, thresholdForce, and iterations to predefined values
+class QuadTree {
+  private capacity: number;
+
+  private points: Point[] = [];
+  public ne: QuadTree | null = null;
+  public nw: QuadTree | null = null;
+  public se: QuadTree | null = null;
+  public sw: QuadTree | null = null;
+
+  public container: Box;
+
+  constructor(container: Box, capacity: number = 4) {
+    this.capacity = capacity;
+    this.container = container;
+  }
+
+  insert(point: Point): boolean {
+    if (!this.container.contains(point)) {
+      return false;
     }
 
-     calculateRepulsiveForce(u: Vertex, v: Vertex) -> Vector {
-        // Get the coordinates of u and v
-        // Calculate the direction vector from v to u
-        // Calculate the distance between u and v
-        // Return the repulsive force using the formula
-     }
-
-     calculateAttractiveForce(u: Vertex, v: Vertex) -> Vector {
-        // Get the coordinates of u and v
-        // Calculate the direction vector from u to v
-        // Calculate the distance between u and v
-        // Return the attractive force using the formula
-     }
-
-    calculateForce(u: Vertex) -> Vector {
-        // Initialize a zero vector for repulsiveForces
-        // For each vertex v in the graph:
-        //     If u is not v:
-        //         Add the repulsive force between u and v to repulsiveForces
-        
-        // Initialize a zero vector for attractiveForces
-        // For each vertex v adjacent to u:
-        //     If u is not v:
-        //         Add the attractive force between u and v to attractiveForces
-        
-        // Return the sum of repulsiveForces and attractiveForces
+    if (this.points.length < this.capacity) {
+      this.points.push(point);
+      return true;
     }
 
-    calculateForces() -> Array of Vectors {
-        // Initialize an empty array for forces
-        // For each vertex in the graph:
-        //     Calculate the net force acting on the vertex
-        //     Append the net force to the forces array
-        
-        // Return forces
+    if (!this.ne) {
+      this.subdivide();
     }
 
-    processOneStep() {
-        // Calculate forces for all vertices
-        // For each vertex in the graph:
-        //     Calculate the new position by adding the force to the current position
-        //     Update the position of the vertex in verticesPositions
-        
-        // Increment the iteration counter
-        // Calculate the maximum force magnitude across all vertices
-        
-        // Return the maximum force magnitude
+    return (
+      this.ne.insert(point) ||
+      this.nw.insert(point) ||
+      this.se.insert(point) ||
+      this.sw.insert(point)
+    );
+  }
+
+  private intersects(circle: Circle): boolean {
+    const { x, y, w, h } = this.container;
+
+    const dx = Math.abs(circle.x - x - w / 2);
+    const dy = Math.abs(circle.y - y - h / 2);
+
+    if (dx > w / 2 + circle.r) {
+      return false;
     }
 
-    processAllSteps() {
-        // Reset the iteration counter
-        // Initialize a variable for the maximum force magnitude
-        // Repeat until the maximum force magnitude is below the threshold or until the maximum iterations is reached:
-        //     Calculate the maximum force magnitude using processOneStep
-        
-        // Return the final verticesPositions
+    if (dy > h / 2 + circle.r) {
+      return false;
     }
+
+    if (dx <= w / 2) {
+      return true;
+    }
+
+    if (dy <= h / 2) {
+      return true;
+    }
+
+    const cornerDistanceSq = (dx - w / 2) ** 2 + (dy - h / 2) ** 2;
+
+    return cornerDistanceSq <= circle.r ** 2;
+  }
+
+  subdivide() {
+    const { x, y, w, h } = this.container;
+
+    const ne = new Box(x + w / 2, y, w / 2, h / 2);
+    const nw = new Box(x, y, w / 2, h / 2);
+    const se = new Box(x + w / 2, y + h / 2, w / 2, h / 2);
+    const sw = new Box(x, y + h / 2, w / 2, h / 2);
+
+    this.ne = new QuadTree(ne, this.capacity);
+    this.nw = new QuadTree(nw, this.capacity);
+    this.se = new QuadTree(se, this.capacity);
+    this.sw = new QuadTree(sw, this.capacity);
+  }
+
+  query(circle: Circle): Point[] {
+    const points: Point[] = [];
+
+    if (!this.intersects(circle)) {
+      return points;
+    }
+
+    for (const point of this.points) {
+      if (circle.contains(point)) {
+        points.push(point);
+      }
+    }
+
+    if (!this.ne) {
+      return points;
+    }
+
+    return [
+      ...points,
+      ...this.ne.query(circle),
+      ...this.nw.query(circle),
+      ...this.se.query(circle),
+      ...this.sw.query(circle),
+    ];
+  }
 }
 `;
 
@@ -249,6 +279,24 @@ const QuadTreeContentPage: React.FC = () => {
           <MathJax.Node inline formula={String.raw`O(n^2)`} />
         </strong>{" "}
         brute force method.
+        <h2 className="flex whitespace-pre-wrap" id="pseudocode">
+          <a className="group relative border-none lg:-ml-2 lg:pl-2 no-underline">
+            Code example of the Algorithm
+          </a>
+        </h2>
+        <Highlight language="ts" code={pseudoCode}>
+          {({ className, style, tokens, getLineProps, getTokenProps }) => (
+            <pre style={style}>
+              {tokens.map((line, i) => (
+                <div key={i} {...getLineProps({ line })}>
+                  {line.map((token, key) => (
+                    <span key={key} {...getTokenProps({ token })} />
+                  ))}
+                </div>
+              ))}
+            </pre>
+          )}
+        </Highlight>
         <h2 className="flex whitespace-pre-wrap" id="playground">
           <a className="group relative border-none lg:-ml-2 lg:pl-2 no-underline">
             Benchmark: Quadtree vs. Brute Force
@@ -285,7 +333,7 @@ const QuadTreeContentPage: React.FC = () => {
             </span>
           </div>
         </div>
-        <div className="not-prose h-[600px]">
+        <div className="not-prose h-[300px] lg:h-[600px]">
           <QuadTreeDemo
             ref={quadTreeDemoRef}
             className="h-full"

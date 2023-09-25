@@ -31,13 +31,6 @@ export class Dijkstra extends EventDispatcher {
       }
     }
 
-    if (sourceVertex === undefined) {
-      sourceVertex = await this.emitBlocking(
-        "selectVertex",
-        graph.getVertex(0)
-      );
-    }
-
     const distances: Map<Vertex, number> = new Map();
     const unvisited: Set<Vertex> = new Set(graph.getVertices());
     const visited: Set<Vertex> = new Set();
@@ -48,6 +41,16 @@ export class Dijkstra extends EventDispatcher {
       distances.set(vertex, Infinity);
       previous.set(vertex, null);
     }
+
+    this.emit("init", distances);
+
+    if (sourceVertex === undefined) {
+      sourceVertex = await this.emitBlocking(
+        "selectVertex",
+        graph.getVertex(0)
+      );
+    }
+
     distances.set(sourceVertex, 0);
 
     while (unvisited.size !== 0) {
