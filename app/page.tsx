@@ -6,11 +6,15 @@ import { SocialIcon } from "react-social-icons";
 import { useRouter } from "next/navigation";
 import { DocPages, categories } from "@/components/pages/pages";
 import { Pacifico } from "next/font/google";
+import WarnBox from "@/components/boxes/warnBox";
 
 const pacifico = Pacifico({ weight: "400", subsets: ["latin"] });
 
 export default function Home() {
   const router = useRouter();
+
+  const isFirefox = /firefox/.test(navigator.userAgent.toLowerCase());
+
   return (
     <main>
       <div className="w-full h-[calc(100vh-56px)]">
@@ -42,6 +46,13 @@ export default function Home() {
             >
               Get Started
             </a>
+            {isFirefox && (
+              <WarnBox className="mt-2">
+                <span>
+                  For best experience, use browsers other than Firefox.
+                </span>
+              </WarnBox>
+            )}
           </div>
         </div>
         <div
