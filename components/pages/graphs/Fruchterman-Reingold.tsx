@@ -356,7 +356,7 @@ const FruchtermanReingoldContentPage: React.FC<SideBarProps> = () => {
               defaultValue={[cRep]}
               min={0}
               max={5}
-              step={0.5}
+              step={0.1}
               onValueChange={(values) => {
                 setCRep(values[0]);
                 fruchReinDisplayRef.current?.changeCRep(values[0]);
@@ -372,7 +372,7 @@ const FruchtermanReingoldContentPage: React.FC<SideBarProps> = () => {
               defaultValue={[cSpring]}
               min={0}
               max={5}
-              step={0.5}
+              step={0.1}
               onValueChange={(values) => {
                 setCSpring(values[0]);
                 fruchReinDisplayRef.current?.changeCSpring(values[0]);
@@ -388,7 +388,7 @@ const FruchtermanReingoldContentPage: React.FC<SideBarProps> = () => {
               value={[l]}
               min={1}
               max={10}
-              step={0.5}
+              step={0.1}
               onValueChange={(values) => {
                 setL(values[0]);
                 fruchReinDisplayRef.current?.changeL(values[0]);
