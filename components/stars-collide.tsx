@@ -15,7 +15,7 @@ export default class StarsCollide extends Component<StarsCollideProps> {
   private speedRange = [30, 60];
   private maxDetectionRadius = 150;
 
-  private interpolateColor(p5: p5, value: number) {
+  private interpolateColor(p5: p5, value: number, opacity: number) {
     const ratio = value / 100;
 
     const startColor = [57, 0, 153];
@@ -26,7 +26,7 @@ export default class StarsCollide extends Component<StarsCollideProps> {
     const b = Math.round(startColor[2] + ratio * (endColor[2] - startColor[2]));
 
     p5.colorMode(p5.RGB);
-    return p5.color(r, g, b);
+    return p5.color(r, g, b, opacity);
   }
 
   private getNumberOfPointsBySize = (p5: p5) => {
@@ -50,6 +50,20 @@ export default class StarsCollide extends Component<StarsCollideProps> {
     return quadTree;
   };
 
+  private isMobile = false;
+  private setIsMobile() {
+    let agent = window.navigator.userAgent;
+    if (
+      agent.match(/Android/i) ||
+      agent.match(/iPhone/i) ||
+      agent.match(/iPad/i)
+    ) {
+      this.isMobile = true;
+    } else {
+      this.isMobile = false;
+    }
+  }
+
   private glow = (p5: p5, color: string, v: number) => {
     p5.drawingContext.shadowColor = color;
     p5.drawingContext.shadowBlur = v;
@@ -59,9 +73,9 @@ export default class StarsCollide extends Component<StarsCollideProps> {
     p5.drawingContext.shadowBlur = 0;
   };
 
-  private getOpacity = (distance: number) => {
-    const v1 = { distance: 0, opacity: 100 };
-    const v2 = { distance: this.maxDetectionRadius, opacity: 0 };
+  private getOpacity = (distance: number, maxDistance: number) => {
+    const v1 = { distance: 0, opacity: 255 };
+    const v2 = { distance: maxDistance, opacity: 0 };
     const a = (v2.opacity - v1.opacity) / (v2.distance - v1.distance);
     const b = v1.opacity - a * v1.distance;
     return a * distance + b;
@@ -81,6 +95,7 @@ export default class StarsCollide extends Component<StarsCollideProps> {
       );
     }
     p5.colorMode(p5.HSB, p5.width, 100, 100, 100);
+    this.setIsMobile();
   };
 
   private draw = (p5: p5) => {
@@ -111,8 +126,18 @@ export default class StarsCollide extends Component<StarsCollideProps> {
     for (let i = 0; i < this.points.length; i++) {
       const pointI = this.points[i];
 
+      let detectionRadius = this.maxDetectionRadius;
+      if (!this.isMobile) {
+        const mouseDistance = p5
+          .createVector(pointI.x, pointI.y)
+          .dist(p5.createVector(p5.mouseX, p5.mouseY));
+        if (mouseDistance < 200) {
+          detectionRadius *= 2;
+        }
+      }
+
       const pointsInRange = quadTree.query(
-        new Circle(pointI.x, pointI.y, this.maxDetectionRadius)
+        new Circle(pointI.x, pointI.y, detectionRadius)
       );
       for (let j = 0; j < pointsInRange.length; j++) {
         const pointJ = pointsInRange[j].data;
@@ -121,8 +146,10 @@ export default class StarsCollide extends Component<StarsCollideProps> {
             .createVector(pointI.x, pointI.y)
             .dist(p5.createVector(pointJ.x, pointJ.y));
 
+          const opacity = this.getOpacity(distance, detectionRadius);
+
           const ratio = ((pointI.x + pointsInRange[j].x) / 2 / p5.width) * 100;
-          const color = this.interpolateColor(p5, ratio);
+          const color = this.interpolateColor(p5, ratio, opacity);
           p5.stroke(color);
           p5.line(pointI.x, pointI.y, pointJ.x, pointJ.y);
         }
@@ -155,6 +182,7 @@ export default class StarsCollide extends Component<StarsCollideProps> {
       this.points = this.points.slice(0, numberOfPoints);
     }
     p5.colorMode(p5.HSB, p5.width, 100, 100, 100);
+    this.setIsMobile();
   };
 
   render() {
