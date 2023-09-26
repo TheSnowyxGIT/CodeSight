@@ -7,13 +7,17 @@ import { useRouter } from "next/navigation";
 import { DocPages, categories } from "@/components/pages/pages";
 import { Pacifico } from "next/font/google";
 import WarnBox from "@/components/boxes/warnBox";
+import { useEffect, useState } from "react";
 
 const pacifico = Pacifico({ weight: "400", subsets: ["latin"] });
 
 export default function Home() {
   const router = useRouter();
+  const [isFirefox, setIsFirefox] = useState(false);
 
-  const isFirefox = /firefox/.test(navigator.userAgent.toLowerCase());
+  useEffect(() => {
+    setIsFirefox(/firefox/.test(navigator.userAgent.toLowerCase()));
+  }, []);
 
   return (
     <main>
